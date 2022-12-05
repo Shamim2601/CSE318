@@ -5,24 +5,24 @@ public class Main{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        int N;
-        System.out.print("Enter size of puzzle(n*n), n = ");
-        N = scanner.nextInt();
+        int k;
+        System.out.print("Enter grid size, k = ");
+        k = scanner.nextInt();
 
-        int[][] matInitial = new int[N][N];
-        ArrayList<Integer> values = new ArrayList<>(N*N);
+        int[][] boardInitial = new int[k][k];
+        ArrayList<Integer> values = new ArrayList<>(k*k);
 
         System.out.println("Enter initial configuration (0 for blank):");
         int i=0,j=0, blankX = -1, blankY = -1;
         while(scanner.hasNext()){
             int input = scanner.nextInt();
 
-            if(input>=0 && input<(N*N)){
+            if(input>=0 && input<(k*k)){
                 if(input==0){
                     blankX = i;
                     blankY = j;
                 }
-                matInitial[i][j++] = input;
+                boardInitial[i][j++] = input;
                 if(values.contains(input)){
                     System.out.println("Duplicate input!");
                     System.exit(1);
@@ -33,22 +33,46 @@ public class Main{
                 System.exit(1);
             }
 
-            if(j==N){
+            if(j==k){
                 i++;
                 j=0;
             }
-            if(i==N)break;
+            if(i==k)break;
         }
+
+        int[][] boardFinal = new int[k][k];
+        int val = 0;
+        for(int p=0;p<k;p++){
+            for(int q=0;q<k;q++){
+                if(p==k-1 && q==k-1) boardFinal[p][q] = 0;
+                else boardFinal[p][q] = ++val;
+            }
+        }
+
+        show(boardInitial);
+        show(boardFinal);
+
+        if(!isSolvable(boardInitial, blankX, blankY)){
+            System.out.println("This grid configuration is not solvable.");
+        }else{
+            int choice;
+            System.out.println("Choose function:\n1.Hamming  2.Manhattan");
+            choice = scanner.nextInt();
+            if(choice==1){
+                System.out.println("you chose hamming");
+            }else if(choice==2){
+                System.out.println("you chose manhattan");
+            }else{
+                System.out.println("Wrong input!");
+            }
+            
+        }
+
         scanner.close();
-
-        show(matInitial);
-        System.out.println(blankX+" "+blankY);
-
-        System.out.println(isSolvable(matInitial));
     }
 
     public static void show(int[][] matrix){
-        System.out.println("Current configuration:");
+        //System.out.println("Current grid configuration:");
         for(int i=0;i<matrix.length;i++){
             for(int j=0;j<matrix.length;j++){
                 if(matrix[i][j]>0)System.out.print(matrix[i][j]+"  ");
@@ -59,12 +83,13 @@ public class Main{
         System.out.println();
     }
 
-    public static boolean isSolvable(int[][] mat) {
+    public static boolean isSolvable(int[][] mat, int blankX, int blankY) {
         int numOfInversions = 0;
         int idx = 0;
-        int[] linearMat = new int[mat.length*mat.length];
-        for(int i=0;i<mat.length;i++){
-            for(int j=0;j<mat.length;j++){
+        int k = mat.length;
+        int[] linearMat = new int[k*k];
+        for(int i=0;i<k;i++){
+            for(int j=0;j<k;j++){
                 linearMat[idx++] = mat[i][j];
             }
         }
@@ -77,8 +102,10 @@ public class Main{
             }
         }
 
-        if(numOfInversions%2 == 1) return false;
+        if(k%2==1 && numOfInversions%2 == 0) return true;
+        
+        if(k%2==0 && ((blankX%2==0 && numOfInversions%2==1) || (blankX%2==1 && numOfInversions%2==0))) return true;
 
-        return true;
+        return false;
     }
 }
