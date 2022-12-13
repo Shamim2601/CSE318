@@ -144,6 +144,11 @@ public class Off1_1805060{
                         if(!identical(closedList, next)){
                             openList.add(next);
                             exploredNodes++;
+                            if(exploredNodes>200){
+                                System.out.println("Could not reach final configuration!");
+                                System.out.println("Number of nodes explored : "+exploredNodes);
+                                System.exit(0);
+                            }
                         }
                     }
                 }
@@ -206,7 +211,7 @@ public class Off1_1805060{
                     //System.out.println(sum);
                     sum+= (int) Math.abs((val-1)/k - m);
                     //System.out.println(sum);
-                    sum+= (int) Math.abs(Math.abs(val%k-1) - n);
+                    sum+= (int) Math.abs(Math.abs((val-1)%k) - n);
                     //System.out.println(sum);
                     //if(m==1 && n==1)System.exit(0);
                 }
